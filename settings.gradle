@@ -1,0 +1,4 @@
+rootProject.name = "Unagi Mobile"
+include ':app'
+include ':core'
+include ':core'
