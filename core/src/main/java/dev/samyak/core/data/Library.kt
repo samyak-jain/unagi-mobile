@@ -11,5 +11,6 @@ data class Library(
     @PrimaryKey
     val id: Int,
     val name: String,
-    val location: String
+    val location: String,
+    val thumbnail: String = "/media/$id.jpeg"
 ): Parcelable
