@@ -2,6 +2,7 @@ package dev.samyak.unagi.compose.layout
 
 import androidx.compose.foundation.ScrollableColumn
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyRowFor
@@ -14,23 +15,27 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.viewModel
 import androidx.navigation.NavController
+import androidx.navigation.NavDirections
+import androidx.navigation.compose.navigate
 import dev.samyak.unagi.viewmodels.HomeModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 
 @ExperimentalCoroutinesApi
 @Composable
-fun HomePage(navController: NavController, homeModel: HomeModel = viewModel()) {
+fun HomePage(navController: NavController, homeModel: HomeModel) {
     val libraryData = homeModel.libraryLiveData.observeAsState(initial = listOf())
-    ScrollableColumn {
+    ScrollableColumn(Modifier.fillMaxHeight().fillMaxWidth()) {
         HomeSection("My Library", libraryData.value) { item ->
-            LibraryCard(library = item, onClick = { /*TODO*/ })
+            LibraryCard(library = item, onClick = {
+                navController.navigate("shows")
+            })
         }
     }
 }
 
 @Composable
 fun<T> HomeSection(title: String, data: List<T>, content: @Composable (T) -> Unit) {
-    Box(Modifier.fillMaxWidth().padding(start = 16.dp, end = 16.dp, bottom = 8.dp)) {
+    Box(Modifier.fillMaxWidth().padding(start = 16.dp, end = 16.dp, bottom = 8.dp, top = 24.dp)) {
         Text(text = title, modifier = Modifier.align(Alignment.CenterStart), style = MaterialTheme.typography.h6)
     }
     LazyRowFor(data) { item ->
