@@ -9,8 +9,8 @@ import dev.samyak.core.data.Episode
 @Dao
 interface EpisodeDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun addEpisode(episode: Episode): Long
+    suspend fun addEpisodes(episodes: List<Episode>)
 
-    @Query("SELECT * FROM episodes WHERE showId = :showId")
-    suspend fun getEpisodes(showId: Int): List<Episode>
+    @Query("SELECT * FROM episodes WHERE showId = :showId AND episodeNumber IS NOT NULL ORDER BY episodeNumber")
+    suspend fun getEpisodes(showId: Int): MutableList<Episode>
 }

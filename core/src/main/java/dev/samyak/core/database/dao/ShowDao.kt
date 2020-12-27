@@ -13,4 +13,7 @@ interface ShowDao {
 
     @Query("SELECT * FROM shows WHERE libraryId = :libraryId")
     suspend fun getShows(libraryId: Int): MutableList<Show>
+
+    @Query("SELECT * FROM shows WHERE id = :showId")
+    suspend fun getShow(showId: Int): List<Show>
 }

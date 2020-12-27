@@ -14,9 +14,9 @@ data class Episode(
     @SerializedName("show_id")
     val showId: Int,
     val name: String,
-    val thumbnail: String,
+    val thumbnail: String?,
     @SerializedName("locator_id")
     val UID: String,
     @SerializedName("episode_number")
-    val episodeNumber: Int
+    val episodeNumber: Int?
 ): Parcelable

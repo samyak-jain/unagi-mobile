@@ -11,6 +11,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import androidx.navigation.compose.navigate
 import dev.samyak.unagi.viewmodels.ShowScreenModel
 
 @Composable
@@ -25,7 +26,9 @@ fun ShowPage(navController: NavController, showScreenModel: ShowScreenModel, lib
     Column(Modifier.fillMaxWidth().padding(start = 8.dp, end = 8.dp, bottom = 8.dp, top = 24.dp)) {
         Text(text = libraryName.value.capitalize(), modifier = Modifier.align(Alignment.Start), style = MaterialTheme.typography.h6)
         LazyGridFor(showData.value) { item ->
-            ShowCard(show = item)
+            ShowCard(show = item, onClick = {
+                navController.navigate("episodes/${item.id}")
+            })
         }
     }
 }

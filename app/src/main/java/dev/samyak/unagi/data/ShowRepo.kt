@@ -19,6 +19,15 @@ class ShowRepo @Inject constructor(
         }
     }
 
+    suspend fun getShow(showId: Int): Show? {
+        val results = showDao.getShow(showId)
+        return if (results.isEmpty()) {
+            null
+        } else {
+            results.first()
+        }
+    }
+
     private suspend fun refresh(libraryId: Int) {
         val response = showsAPI.listShows(libraryId)
         val body = response.body()
