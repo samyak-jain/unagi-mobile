@@ -6,8 +6,6 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dev.samyak.core.data.Library
-import dev.samyak.core.network.Failure
-import dev.samyak.core.network.Success
 import dev.samyak.unagi.data.LibraryRepo
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.launch
@@ -23,15 +21,6 @@ class HomeModel @ViewModelInject constructor(private val libraryRepo: LibraryRep
     }
 
     private fun fetchLibrary() = viewModelScope.launch {
-        when (val results = libraryRepo.fetchAllLibrary()) {
-            is Success -> {
-                if (results.data.filterNotNull().isNotEmpty()) {
-                    _libraryLiveData.value = results.data.filterNotNull()
-                }
-            }
-            is Failure -> {
-
-            }
-        }
+        _libraryLiveData.postValue(libraryRepo.fetchAllLibrary())
     }
 }

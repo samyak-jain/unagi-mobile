@@ -9,8 +9,8 @@ import dev.samyak.core.data.Show
 @Dao
 interface ShowDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun addShow(show: Show): Long
+    suspend fun addShows(show: List<Show>)
 
     @Query("SELECT * FROM shows WHERE libraryId = :libraryId")
-    suspend fun getShows(libraryId: Int): List<Show>
+    suspend fun getShows(libraryId: Int): MutableList<Show>
 }

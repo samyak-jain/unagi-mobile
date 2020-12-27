@@ -17,6 +17,7 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.bumptech.glide.request.RequestOptions
 import com.skydoves.landscapist.glide.GlideImage
 import dev.samyak.core.data.Library
+import dev.samyak.core.data.Show
 import dev.samyak.unagi.data.preview.LibraryProvider
 import java.util.*
 
@@ -40,6 +41,31 @@ fun LibraryCard(library: Library, modifier: Modifier = Modifier, onClick: () -> 
                         style = MaterialTheme.typography.body1,
                         maxLines = 2,
                         modifier = Modifier.padding(horizontal = 2.dp, vertical = 3.dp).align(Alignment.CenterHorizontally))
+            }
+        }
+    }
+}
+
+@Composable
+fun ShowCard(show: Show, modifier: Modifier = Modifier, onClick: () -> Unit = {}) {
+    Log.d("ShowCard", "Name: ${show.title}, Thumbnail: ${show.bannerImage}")
+
+    Column(modifier.width(125.dp).padding(vertical = 2.dp)) {
+        Card(elevation = 4.dp,
+            modifier = modifier.padding(horizontal = 8.dp, 4.dp).clickable { onClick() },
+            shape = MaterialTheme.shapes.medium) {
+
+            Column {
+                GlideImage(
+                    imageModel = show.coverImage,
+                    modifier = Modifier.fillMaxWidth().aspectRatio(2 / 3F),
+                    requestOptions = RequestOptions().diskCacheStrategy(DiskCacheStrategy.ALL).centerCrop()
+                )
+
+                Text(text = show.title.capitalize(Locale.getDefault()),
+                    style = MaterialTheme.typography.caption,
+                    maxLines = 2,
+                    modifier = Modifier.padding(horizontal = 2.dp, vertical = 3.dp).align(Alignment.CenterHorizontally))
             }
         }
     }

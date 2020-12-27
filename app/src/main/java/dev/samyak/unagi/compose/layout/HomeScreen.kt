@@ -27,7 +27,7 @@ fun HomePage(navController: NavController, homeModel: HomeModel) {
     ScrollableColumn(Modifier.fillMaxHeight().fillMaxWidth()) {
         HomeSection("My Library", libraryData.value) { item ->
             LibraryCard(library = item, onClick = {
-                navController.navigate("shows")
+                navController.navigate("shows/${item.id}")
             })
         }
     }

@@ -55,9 +55,9 @@ dependencies {
     api "com.squareup.okhttp3:logging-interceptor:4.9.0"
 
     def room_version = "2.2.6"
-    implementation "androidx.room:room-runtime:$room_version"
+    api "androidx.room:room-runtime:$room_version"
     kapt "androidx.room:room-compiler:$room_version"
-    implementation "androidx.room:room-ktx:$room_version"
+    api "androidx.room:room-ktx:$room_version"
 
     testImplementation 'junit:junit:4.13.1'
     androidTestImplementation 'androidx.test.ext:junit:1.1.2'
