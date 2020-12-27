@@ -4,33 +4,31 @@ import android.graphics.Bitmap
 import android.graphics.drawable.Drawable
 import android.os.Build
 import android.text.Html
-import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.setValue
+import androidx.compose.foundation.lazy.LazyColumnForIndexed
+import androidx.compose.material.AmbientContentAlpha
+import androidx.compose.material.ContentAlpha
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
+import androidx.compose.runtime.collection.MutableVector
+import androidx.compose.runtime.collection.mutableVectorOf
 import androidx.compose.runtime.livedata.observeAsState
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.AmbientContext
-import androidx.compose.ui.platform.ContextAmbient
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.bumptech.glide.Glide
-import com.bumptech.glide.load.engine.DiskCacheStrategy
-import com.bumptech.glide.request.RequestOptions
 import com.bumptech.glide.request.target.CustomTarget
 import com.bumptech.glide.request.transition.Transition
-import com.skydoves.landscapist.glide.GlideImage
+import dev.samyak.core.data.Episode
 import dev.samyak.unagi.viewmodels.EpisodeScreenModel
 import java.util.*
+import kotlin.collections.HashMap
 
 @Composable
 fun EpisodePage(navController: NavController, episodeScreenModel: EpisodeScreenModel, showId: Int) {
@@ -70,6 +68,8 @@ fun EpisodePage(navController: NavController, episodeScreenModel: EpisodeScreenM
             CustomTabLayout { index -> pageToLoad.value = index}
             if (pageToLoad.value == 0) {
                 AboutPage(description = showDataValue.description)
+            } else if (pageToLoad.value == 1) {
+                EpisodeScrollView(episodeList = episodeData.value)
             }
         }
     }
@@ -84,4 +84,38 @@ fun AboutPage(description: String) {
         @Suppress("DEPRECATION")
         Html.fromHtml(description).toString()
     }, style = MaterialTheme.typography.body1)
+}
+
+@Composable
+fun EpisodeScrollView(episodeList: List<Episode>) {
+
+    val thumbnailList: MutableList<Bitmap> = remember { mutableListOf() }
+
+
+    LazyColumnForIndexed(items = episodeList) { index, item ->
+
+        Glide.with(AmbientContext.current).asBitmap()
+            .load(item.thumbnail).into(object : CustomTarget<Bitmap>() {
+                override fun onResourceReady(resource: Bitmap, transition: Transition<in Bitmap>?) {
+                    thumbnailList[index] = resource
+                }
+
+                override fun onLoadCleared(placeholder: Drawable?) {}
+
+            })
+
+        thumbnailList.getOrNull(index)?.let {
+            Box(modifier = Modifier.fillMaxWidth().height(100.dp)) {
+                Image(
+                    bitmap = it.asImageBitmap(),
+                    modifier = Modifier.fillMaxWidth().fillMaxHeight(),
+                    contentScale = ContentScale.Crop
+                )
+
+                Providers(AmbientContentAlpha provides ContentAlpha.medium) {
+                    Text(text = item.name, modifier = Modifier.align(Alignment.CenterStart), color = MaterialTheme.colors.background)
+                }
+            }
+        }
+    }
 }

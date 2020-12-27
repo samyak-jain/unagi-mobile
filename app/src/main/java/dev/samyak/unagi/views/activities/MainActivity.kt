@@ -1,5 +1,6 @@
 package dev.samyak.unagi.views.activities
 
+import android.net.Uri
 import android.os.Bundle
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
@@ -17,6 +18,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import dev.samyak.unagi.compose.layout.EpisodePage
 import dev.samyak.unagi.compose.layout.HomePage
 import dev.samyak.unagi.compose.layout.ShowPage
+import dev.samyak.unagi.compose.layout.VideoPlayer
 import dev.samyak.unagi.ui.UnagiTheme
 import dev.samyak.unagi.viewmodels.EpisodeScreenModel
 import dev.samyak.unagi.viewmodels.HomeModel
@@ -60,6 +62,15 @@ class MainActivity : AppCompatActivity() {
                                         episodeScreenModel = episodeScreenModel,
                                         showId = it
                                     )
+                                }
+                            }
+
+                            composable(
+                                "video/{uid}",
+                                arguments = listOf(navArgument("uid") { type = NavType.StringType })
+                            ) {
+                                backStackEntry -> backStackEntry.arguments?.getString("uid")?.let {
+                                    VideoPlayer(uri = Uri.parse(it))
                                 }
                             }
                         }
