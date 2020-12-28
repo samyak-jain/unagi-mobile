@@ -11,7 +11,7 @@ interface ShowDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun addShows(show: List<Show>)
 
-    @Query("SELECT * FROM shows WHERE libraryId = :libraryId")
+    @Query("SELECT * FROM shows WHERE libraryId = :libraryId ORDER BY title")
     suspend fun getShows(libraryId: Int): MutableList<Show>
 
     @Query("SELECT * FROM shows WHERE id = :showId")

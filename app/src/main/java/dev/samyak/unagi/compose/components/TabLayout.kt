@@ -1,9 +1,7 @@
-package dev.samyak.unagi.compose.layout
+package dev.samyak.unagi.compose.components
 
-import android.content.res.Resources
-import android.content.res.loader.ResourcesProvider
+import android.graphics.Color
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.runtime.Composable
@@ -18,6 +16,7 @@ import com.gigamole.navigationtabstrip.NavigationTabStrip
 
 @Composable
 fun CustomTabLayout(
+    color: Int = Color.RED,
     tabNavigator: (Int) -> Unit
 ) {
     val context = AmbientContext.current
@@ -31,6 +30,7 @@ fun CustomTabLayout(
             setTitles("About", "Episodes")
             setTabIndex(0, true)
             stripType = NavigationTabStrip.StripType.LINE
+            stripColor = color
             titleSize = tabTitleSize
             stripGravity = NavigationTabStrip.StripGravity.BOTTOM
             animationDuration = 200

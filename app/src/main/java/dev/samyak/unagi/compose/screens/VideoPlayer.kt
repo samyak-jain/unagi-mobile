@@ -1,4 +1,4 @@
-package dev.samyak.unagi.compose.layout
+package dev.samyak.unagi.compose.screens
 
 import android.net.Uri
 import android.view.ViewGroup.LayoutParams.MATCH_PARENT

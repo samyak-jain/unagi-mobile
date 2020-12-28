@@ -1,4 +1,4 @@
-package dev.samyak.unagi.compose.layout
+package dev.samyak.unagi.compose.screens
 
 import androidx.compose.foundation.ScrollableColumn
 import androidx.compose.foundation.layout.Box
@@ -13,10 +13,9 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.viewinterop.viewModel
 import androidx.navigation.NavController
-import androidx.navigation.NavDirections
 import androidx.navigation.compose.navigate
+import dev.samyak.unagi.compose.components.LibraryCard
 import dev.samyak.unagi.viewmodels.HomeModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 
