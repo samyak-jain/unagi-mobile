@@ -22,6 +22,14 @@ class EpisodeRepo @Inject constructor(
         }
     }
 
+    override suspend fun startTranscoding(episodeID: Int) {
+        val episode = withContext(Dispatchers.IO) {
+            episodeDao.getEpisode(episodeID)
+        }
+
+        episodesAPI.startTranscode(episode.UID)
+    }
+
     suspend fun getShow(showId: Int): List<Show> {
         return withContext(Dispatchers.IO) {
             showDao.getShow(showId)

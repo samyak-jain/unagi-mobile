@@ -4,6 +4,7 @@ import android.net.Uri
 import android.os.Bundle
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Box
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
@@ -31,6 +32,7 @@ class MainActivity : AppCompatActivity() {
     private val showScreenModel: ShowScreenModel by viewModels()
     private val episodeScreenModel: EpisodeScreenModel by viewModels()
 
+    @ExperimentalFoundationApi
     @ExperimentalCoroutinesApi
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

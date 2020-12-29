@@ -4,6 +4,7 @@ import android.os.Build
 import android.text.Html
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyColumnFor
 import androidx.compose.material.AmbientContentAlpha
 import androidx.compose.material.ContentAlpha
@@ -31,6 +32,7 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
+import androidx.navigation.compose.navigate
 
 @Composable
 fun EpisodePage(navController: NavController, episodeScreenModel: EpisodeScreenModel, showId: Int) {
@@ -68,7 +70,12 @@ fun EpisodePage(navController: NavController, episodeScreenModel: EpisodeScreenM
                 } ?: AboutPage(description = showDataValue.description)
 
             } else if (pageToLoad.value == 1) {
-                EpisodeScrollView(episodeList = episodeData.value)
+                EpisodeScrollView(episodeData.value) { episodeID, episodeUID ->
+                    episodeScreenModel.startTranscoding(episodeID)
+
+                    val videoURL = "http://192.168.0.110:8000/file/$episodeUID/out.m3u8"
+                    navController.navigate("video/$videoURL")
+                }
             }
         }
     }
@@ -98,24 +105,32 @@ fun AboutPage(description: String, color: Int = android.graphics.Color.BLACK) {
 }
 
 @Composable
-fun EpisodeScrollView(episodeList: List<Episode>) {
-    LazyColumnFor(items = episodeList, modifier = Modifier.fillMaxHeight().fillMaxWidth()) { item ->
-        Box(modifier = Modifier.fillMaxWidth().height(150.dp)) {
-            item.thumbnail?.let { LoadImage(url = it, enableShimmer = true) }
-
-            Providers(AmbientContentAlpha provides ContentAlpha.medium) {
-
-                val textHeightModifier = if (item.thumbnail == null) {
-                    Modifier.height(40.dp).align(Alignment.CenterStart)
-                } else {
-                    Modifier.align(Alignment.BottomStart)
+fun EpisodeScrollView(episodeList: List<Episode>, onClickEpisode: (Int, String) -> Unit) {
+    LazyColumn(modifier = Modifier.fillMaxHeight().fillMaxWidth()) {
+        items(episodeList) { item ->
+            Box(modifier = Modifier.fillMaxWidth().height(150.dp)) {
+                item.thumbnail?.let {
+                    LoadImage(url = it, enableShimmer = true, onClickImage = {
+                        onClickEpisode(item.id, item.UID)
+                    })
                 }
 
-                Text(text = item.name,
-                    maxLines = 2,
-                    overflow = TextOverflow.Ellipsis,
-                    modifier = textHeightModifier.fillMaxWidth()
-                        .background(alpha = 0.5f, brush = SolidColor(Color.Black)))
+                Providers(AmbientContentAlpha provides ContentAlpha.medium) {
+
+                    val textHeightModifier = if (item.thumbnail == null) {
+                        Modifier.height(40.dp).align(Alignment.CenterStart)
+                    } else {
+                        Modifier.align(Alignment.BottomStart)
+                    }
+
+                    Text(
+                        text = item.name,
+                        maxLines = 2,
+                        overflow = TextOverflow.Ellipsis,
+                        modifier = textHeightModifier.fillMaxWidth()
+                            .background(alpha = 0.5f, brush = SolidColor(Color.Black))
+                    )
+                }
             }
         }
     }

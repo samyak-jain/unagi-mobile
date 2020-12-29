@@ -31,6 +31,10 @@ class EpisodeScreenModel @ViewModelInject constructor(
         _episodeLiveData.postValue(episodeRepo.fetchAllEpisodes(showId))
     }
 
+    fun startTranscoding(episodeId: Int) = viewModelScope.launch {
+        episodeRepo.startTranscoding(episodeId)
+    }
+
     fun getShow(showId: Int) = viewModelScope.launch {
         showRepo.getShow(showId)?.let {
             _showLiveData.postValue(listOf(it))

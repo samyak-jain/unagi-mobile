@@ -13,4 +13,7 @@ interface EpisodeDao {
 
     @Query("SELECT * FROM episodes WHERE showId = :showId AND episodeNumber IS NOT NULL ORDER BY episodeNumber")
     suspend fun getEpisodes(showId: Int): MutableList<Episode>
+
+    @Query("SELECT * FROM episodes WHERE id = :episodeId")
+    suspend fun getEpisode(episodeId: Int): Episode
 }

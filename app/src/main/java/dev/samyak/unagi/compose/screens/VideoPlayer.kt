@@ -11,44 +11,49 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.AmbientContext
 import androidx.compose.ui.viewinterop.AndroidView
-import com.google.android.exoplayer2.C
-import com.google.android.exoplayer2.Player
+import com.google.android.exoplayer2.MediaItem
 import com.google.android.exoplayer2.SimpleExoPlayer
-import com.google.android.exoplayer2.source.ProgressiveMediaSource
+import com.google.android.exoplayer2.source.hls.HlsMediaSource
+import com.google.android.exoplayer2.trackselection.DefaultTrackSelector
 import com.google.android.exoplayer2.ui.AspectRatioFrameLayout
 import com.google.android.exoplayer2.ui.PlayerView
 import com.google.android.exoplayer2.upstream.DataSource
-import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory
+import com.google.android.exoplayer2.upstream.DefaultHttpDataSourceFactory
 import com.google.android.exoplayer2.util.Util
 
 @Composable
 fun VideoPlayer(uri: Uri) {
     val context = AmbientContext.current
 
+    val trackSelector = DefaultTrackSelector(context)
+    trackSelector.setParameters(
+        trackSelector.buildUponParameters()
+            .setPreferredAudioLanguage("ja")
+            .setPreferredTextLanguage("en")
+    )
+
     val exoPlayer = remember {
-        SimpleExoPlayer.Builder(context)
+        SimpleExoPlayer.Builder(context).setTrackSelector(trackSelector)
             .build()
             .apply {
-                val dataSourceFactory: DataSource.Factory = DefaultDataSourceFactory(
-                    context,
+                val dataSourceFactory: DataSource.Factory = DefaultHttpDataSourceFactory(
                     Util.getUserAgent(context, context.packageName)
                 )
 
-                val source = ProgressiveMediaSource.Factory(dataSourceFactory)
-                    .createMediaSource(uri)
+                val hlsMediaSource = HlsMediaSource.Factory(dataSourceFactory).createMediaSource(
+                    MediaItem.fromUri(uri))
 
-                this.prepare(source)
+                setMediaSource(hlsMediaSource)
+                prepare()
             }
     }
 
     exoPlayer.playWhenReady = true
-    exoPlayer.videoScalingMode = C.VIDEO_SCALING_MODE_SCALE_TO_FIT_WITH_CROPPING
-    exoPlayer.repeatMode = Player.REPEAT_MODE_ONE
 
     AndroidView(viewBlock = { context ->
         PlayerView(context).apply {
             hideController()
-            useController = false
+            useController = true
             resizeMode = AspectRatioFrameLayout.RESIZE_MODE_ZOOM
 
             player = exoPlayer

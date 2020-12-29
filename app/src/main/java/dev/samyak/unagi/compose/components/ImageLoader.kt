@@ -5,6 +5,7 @@ import android.graphics.Matrix
 import android.graphics.PorterDuff
 import android.graphics.PorterDuffXfermode
 import android.graphics.drawable.Drawable
+import android.text.style.ClickableSpan
 import androidx.compose.animation.animatedFloat
 import androidx.compose.animation.core.AnimationConstants
 import androidx.compose.animation.core.LinearEasing
@@ -12,6 +13,7 @@ import androidx.compose.animation.core.repeatable
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
@@ -38,12 +40,13 @@ import kotlin.math.tan
 fun LoadImage(url: String,
               modifier: Modifier = Modifier,
               contentScale: ContentScale = ContentScale.Crop,
-              enableShimmer: Boolean = false, onPalette: (Palette?) -> Unit = {}) {
+              onClickImage: () -> Unit = {},
+              enableShimmer: Boolean = false,
+              onPalette: (Palette?) -> Unit = {}) {
 
     var image by remember { mutableStateOf<ImageBitmap?>(null) }
     val sizeModifier = modifier.fillMaxWidth().fillMaxHeight()
     val context = AmbientContext.current
-    var imagePalette by remember { mutableStateOf<Palette?>(null) }
 
     var drawable by remember { mutableStateOf(true) }
 
@@ -77,7 +80,11 @@ fun LoadImage(url: String,
 
     if (theImage != null) {
         Column(modifier = sizeModifier) {
-            Image(bitmap = theImage, modifier = sizeModifier, contentScale = contentScale)
+            Image(
+                bitmap = theImage,
+                modifier = sizeModifier.clickable(onClick = { onClickImage() }),
+                contentScale = contentScale
+            )
         }
     } else if (drawable) {
         if (enableShimmer) {

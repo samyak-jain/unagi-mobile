@@ -8,4 +8,7 @@ import retrofit2.http.Path
 interface EpisodesAPI {
     @GET("episodes/{id}")
     suspend fun listEpisodes(@Path("id") id: Int): Response<List<Episode>>
+
+    @GET("transcode/{uid}")
+    suspend fun startTranscode(@Path("uid") uid: String)
 }
