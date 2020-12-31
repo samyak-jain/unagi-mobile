@@ -1,23 +1,24 @@
 package dev.samyak.unagi.compose.screens
 
+import android.content.Context
+import android.content.Intent
 import android.os.Build
 import android.text.Html
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.LazyColumnFor
 import androidx.compose.material.AmbientContentAlpha
 import androidx.compose.material.ContentAlpha
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.Providers
+import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.AmbientContext
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
@@ -26,13 +27,9 @@ import dev.samyak.core.data.Episode
 import dev.samyak.unagi.compose.components.CustomTabLayout
 import dev.samyak.unagi.compose.components.LoadImage
 import dev.samyak.unagi.viewmodels.EpisodeScreenModel
+import dev.samyak.unagi.views.VideoActivity
 import java.util.*
-import androidx.compose.runtime.*
-import androidx.compose.ui.draw.alpha
-import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.SolidColor
-import androidx.navigation.compose.navigate
+
 
 @Composable
 fun EpisodePage(navController: NavController, episodeScreenModel: EpisodeScreenModel, showId: Int) {
@@ -55,8 +52,8 @@ fun EpisodePage(navController: NavController, episodeScreenModel: EpisodeScreenM
                     contentScale = ContentScale.FillHeight, onPalette = { palette = it })
 
             Text(text = showDataValue.title.capitalize(Locale.getDefault()),
-                modifier = Modifier.align(Alignment.Start).padding(10.dp),
-                style = MaterialTheme.typography.h6)
+                    modifier = Modifier.align(Alignment.Start).padding(10.dp),
+                    style = MaterialTheme.typography.h6)
 
 
                 palette?.getDarkVibrantColor(android.graphics.Color.RED)?.let {
@@ -70,11 +67,18 @@ fun EpisodePage(navController: NavController, episodeScreenModel: EpisodeScreenM
                 } ?: AboutPage(description = showDataValue.description)
 
             } else if (pageToLoad.value == 1) {
-                EpisodeScrollView(episodeData.value) { episodeID, episodeUID ->
-                    episodeScreenModel.startTranscoding(episodeID)
+                EpisodeScrollView(episodeData.value) { context, episode ->
+                    episodeScreenModel.startTranscoding(episode.id)
 
-                    val videoURL = "http://192.168.0.110:8000/file/$episodeUID/out.m3u8"
-                    navController.navigate("video/$videoURL")
+                    val videoURL = "http://192.168.0.110:8000/file/${episode.UID}/out.m3u8"
+                    val subtitleURL = "http://192.168.0.110:8000/file/${episode.UID}/out_vtt.m3u8"
+
+                    val intent = Intent(context, VideoActivity::class.java).apply {
+                        putExtra("uri", videoURL)
+                    }
+
+                    context.startActivity(intent)
+
                 }
             }
         }
@@ -85,33 +89,35 @@ fun EpisodePage(navController: NavController, episodeScreenModel: EpisodeScreenM
 fun AboutPage(description: String, color: Int = android.graphics.Color.BLACK) {
     Box(modifier = Modifier.background(Color(color)).fillMaxSize()) {
         Column(
-            modifier = Modifier.fillMaxHeight().padding(horizontal = 8.dp)
+                modifier = Modifier.fillMaxHeight().padding(horizontal = 8.dp)
         ) {
             Text(text = "Description", style = MaterialTheme.typography.subtitle1,
-                modifier = Modifier.padding(vertical = 10.dp))
+                    modifier = Modifier.padding(vertical = 10.dp))
 
             Text(
-                text = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                    Html.fromHtml(description, Html.FROM_HTML_MODE_LEGACY).toString()
-                } else {
-                    @Suppress("DEPRECATION")
-                    Html.fromHtml(description).toString()
-                }, style = MaterialTheme.typography.body1,
-                modifier = Modifier.padding(bottom = 30.dp),
-                overflow = TextOverflow.Ellipsis
+                    text = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                        Html.fromHtml(description, Html.FROM_HTML_MODE_LEGACY).toString()
+                    } else {
+                        @Suppress("DEPRECATION")
+                        Html.fromHtml(description).toString()
+                    }, style = MaterialTheme.typography.body1,
+                    modifier = Modifier.padding(bottom = 30.dp),
+                    overflow = TextOverflow.Ellipsis
             )
         }
     }
 }
 
 @Composable
-fun EpisodeScrollView(episodeList: List<Episode>, onClickEpisode: (Int, String) -> Unit) {
+fun EpisodeScrollView(episodeList: List<Episode>, onClickEpisode: (Context, Episode) -> Unit) {
+    val context = AmbientContext.current
+
     LazyColumn(modifier = Modifier.fillMaxHeight().fillMaxWidth()) {
         items(episodeList) { item ->
             Box(modifier = Modifier.fillMaxWidth().height(150.dp)) {
                 item.thumbnail?.let {
                     LoadImage(url = it, enableShimmer = true, onClickImage = {
-                        onClickEpisode(item.id, item.UID)
+                        onClickEpisode(context, item)
                     })
                 }
 
@@ -124,11 +130,11 @@ fun EpisodeScrollView(episodeList: List<Episode>, onClickEpisode: (Int, String) 
                     }
 
                     Text(
-                        text = item.name,
-                        maxLines = 2,
-                        overflow = TextOverflow.Ellipsis,
-                        modifier = textHeightModifier.fillMaxWidth()
-                            .background(alpha = 0.5f, brush = SolidColor(Color.Black))
+                            text = item.name,
+                            maxLines = 2,
+                            overflow = TextOverflow.Ellipsis,
+                            modifier = textHeightModifier.fillMaxWidth()
+                                    .background(alpha = 0.5f, brush = SolidColor(Color.Black))
                     )
                 }
             }

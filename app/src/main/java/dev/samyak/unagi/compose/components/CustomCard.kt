@@ -26,8 +26,7 @@ fun LibraryCard(library: Library, modifier: Modifier = Modifier, onClick: () -> 
             Column {
                 LoadImage(url = library.thumbnail,
                         modifier = Modifier.fillMaxWidth().aspectRatio(6 / 3F),
-                        onClickImage = { onClick() },
-                        enableShimmer = true)
+                        onClickImage = { onClick() })
 
                 Text(text = library.name.capitalize(Locale.getDefault()),
                         style = MaterialTheme.typography.body1,
